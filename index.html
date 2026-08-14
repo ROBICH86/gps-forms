@@ -6,12 +6,13 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+      content="width=device-width, initial-scale=1.0">
 
 <meta name="theme-color"
-content="#1769e0">
+      content="#1769e0">
 
 <title>Ma position GPS</title>
+
 
 <style>
 
@@ -20,23 +21,32 @@ content="#1769e0">
 }
 
 body {
+
     margin: 0;
+
     min-height: 100vh;
 
-    font-family: Arial, sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
     background: #f3f6fa;
 
     display: flex;
+
     justify-content: center;
+
     align-items: center;
 
     padding: 20px;
 }
 
+
 .container {
 
     width: 100%;
+
     max-width: 430px;
 
     background: white;
@@ -51,21 +61,36 @@ body {
     text-align: center;
 }
 
+
 .logo {
+
     font-size: 55px;
+
+    margin-bottom: 5px;
 }
 
+
 h1 {
-    margin: 5px 0 10px;
+
+    margin: 0 0 10px;
+
     font-size: 28px;
+
     color: #172033;
 }
 
+
 .description {
+
     color: #687386;
+
+    font-size: 16px;
+
     line-height: 1.5;
+
     margin-bottom: 25px;
 }
+
 
 button {
 
@@ -75,25 +100,42 @@ button {
 
     border-radius: 15px;
 
-    padding: 18px;
+    padding: 17px 15px;
 
-    font-size: 18px;
+    font-size: 17px;
 
     font-weight: bold;
 
     cursor: pointer;
+
+    margin-top: 10px;
 }
+
+
+button:active {
+
+    transform: scale(0.98);
+}
+
 
 #gpsButton {
 
     background: #1769e0;
 
     color: white;
+
+    box-shadow:
+        0 5px 15px rgba(23,105,224,0.25);
 }
 
+
 #gpsButton:disabled {
+
     opacity: 0.6;
+
+    cursor: wait;
 }
+
 
 #status {
 
@@ -101,16 +143,27 @@ button {
 
     font-weight: bold;
 
-    min-height: 25px;
+    min-height: 24px;
 }
 
-.ok {
+
+.status-normal {
+
+    color: #687386;
+}
+
+
+.status-ok {
+
     color: #087443;
 }
 
-.error {
+
+.status-error {
+
     color: #b42318;
 }
+
 
 .result {
 
@@ -120,6 +173,7 @@ button {
 
     text-align: left;
 }
+
 
 .coordinate {
 
@@ -132,12 +186,16 @@ button {
     margin-bottom: 10px;
 }
 
+
 .label {
 
     font-size: 12px;
 
     color: #687386;
+
+    margin-bottom: 5px;
 }
+
 
 .value {
 
@@ -145,8 +203,11 @@ button {
 
     font-weight: bold;
 
-    margin-top: 5px;
+    color: #172033;
+
+    word-break: break-all;
 }
+
 
 .accuracy {
 
@@ -157,18 +218,20 @@ button {
     margin: 15px 0;
 }
 
-.copy {
+
+.copy-button {
 
     background: #e8edf5;
 
     color: #172033;
-
-    margin-top: 5px;
 }
 
-.maps {
+
+.maps-button {
 
     display: block;
+
+    width: 100%;
 
     text-align: center;
 
@@ -180,23 +243,81 @@ button {
 
     border-radius: 15px;
 
-    padding: 16px;
+    padding: 16px 15px;
+
+    font-size: 17px;
 
     font-weight: bold;
 
     margin-top: 10px;
 }
 
+
+.form-button {
+
+    display: block;
+
+    width: 100%;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    background: #1769e0;
+
+    color: white;
+
+    border-radius: 15px;
+
+    padding: 17px 15px;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    margin-top: 10px;
+}
+
+
 .info {
 
-    margin-top: 20px;
+    margin-top: 22px;
 
     font-size: 12px;
 
-    color: #87909f;
-
     line-height: 1.5;
+
+    color: #87909f;
 }
+
+
+.position-text {
+
+    margin-top: 15px;
+
+    background: #eef6ff;
+
+    border: 1px solid #c9def7;
+
+    border-radius: 12px;
+
+    padding: 14px;
+
+    text-align: center;
+
+    color: #172033;
+
+}
+
+
+.position-text strong {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+}
+
 
 </style>
 
@@ -205,110 +326,163 @@ button {
 
 <body>
 
+
 <div class="container">
 
-<div class="logo">
-📍
-</div>
 
-<h1>
-Ma position GPS
-</h1>
-
-<div class="description">
-
-Cliquez sur le bouton ci-dessous
-pour transmettre votre position.
-
-</div>
+    <div class="logo">
+        📍
+    </div>
 
 
-<button id="gpsButton">
-
-ENREGISTRER MA POSITION
-
-</button>
+    <h1>
+        Ma position GPS
+    </h1>
 
 
-<div id="status">
+    <div class="description">
 
-Prêt.
+        Cliquez sur le bouton ci-dessous
+        pour récupérer votre position actuelle.
 
-</div>
-
-
-<div id="result"
-class="result">
+    </div>
 
 
-<div class="coordinate">
+    <button id="gpsButton">
 
-<div class="label">
-LATITUDE
-</div>
+        📍 ENREGISTRER MA POSITION
 
-<div id="latitude"
-class="value">
-</div>
-
-</div>
+    </button>
 
 
-<div class="coordinate">
+    <div
+        id="status"
+        class="status-normal">
 
-<div class="label">
-LONGITUDE
-</div>
+        Prêt à rechercher votre position.
 
-<div id="longitude"
-class="value">
-</div>
-
-</div>
+    </div>
 
 
-<div id="accuracy"
-class="accuracy">
-</div>
+    <div
+        id="result"
+        class="result">
 
 
-<button id="copyButton"
-class="copy">
+        <div class="coordinate">
 
-📋 COPIER LA POSITION
+            <div class="label">
+                LATITUDE
+            </div>
 
-</button>
+            <div
+                id="latitude"
+                class="value">
 
+            </div>
 
-<a id="mapsButton"
-class="maps"
-target="_blank">
-
-🗺️ OUVRIR DANS GOOGLE MAPS
-
-</a>
+        </div>
 
 
-</div>
+        <div class="coordinate">
+
+            <div class="label">
+                LONGITUDE
+            </div>
+
+            <div
+                id="longitude"
+                class="value">
+
+            </div>
+
+        </div>
 
 
-<div class="info">
+        <div
+            id="accuracy"
+            class="accuracy">
 
-La position est récupérée directement
-par le GPS de votre téléphone.
+        </div>
 
-<br><br>
 
-Vous devez autoriser l'accès à votre
-position lorsque le navigateur le demande.
+        <div class="position-text">
 
-</div>
+            <strong>
+                Position à transmettre
+            </strong>
+
+            <span id="positionText">
+
+            </span>
+
+        </div>
+
+
+        <button
+            id="copyButton"
+            class="copy-button">
+
+            📋 COPIER LA POSITION
+
+        </button>
+
+
+        <a
+            id="mapsButton"
+            class="maps-button"
+            target="_blank"
+            rel="noopener">
+
+            🗺️ VÉRIFIER DANS GOOGLE MAPS
+
+        </a>
+
+
+        <a
+            id="formButton"
+            class="form-button"
+            target="_blank"
+            rel="noopener">
+
+            📝 OUVRIR LE FORMULAIRE
+
+        </a>
+
+
+    </div>
+
+
+    <div class="info">
+
+        La position est récupérée directement
+        par le GPS de votre téléphone.
+
+        <br><br>
+
+        Vous devez autoriser l'accès à votre
+        position lorsque le navigateur le demande.
+
+    </div>
+
 
 </div>
 
 
 <script>
 
+
+// ==========================================================
+// LIEN MICROSOFT FORMS
+// ==========================================================
+
+const FORM_URL =
+"https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=xVRB64EePEyeXailR4Bsjlg6OUP7dnRJqiYMXq7KCd1UREtMV0VBRERMNDI4RVcyUlJGRElCSlhXTy4u";
+
+
+// ==========================================================
+// ELEMENTS
+// ==========================================================
 
 const gpsButton =
 document.getElementById("gpsButton");
@@ -328,208 +502,378 @@ document.getElementById("longitude");
 const accuracy =
 document.getElementById("accuracy");
 
+const positionText =
+document.getElementById("positionText");
+
 const copyButton =
 document.getElementById("copyButton");
 
 const mapsButton =
 document.getElementById("mapsButton");
 
+const formButton =
+document.getElementById("formButton");
+
+
+// ==========================================================
+// VARIABLE POSITION
+// ==========================================================
 
 let positionGPS = "";
 
 
+// ==========================================================
+// BOUTON GPS
+// ==========================================================
+
 gpsButton.addEventListener(
-"click",
-function() {
+
+    "click",
+
+    function() {
 
 
-result.style.display = "none";
+        // Réinitialisation
 
-status.className = "";
-
-status.textContent =
-"Recherche de votre position…";
-
-gpsButton.disabled = true;
+        result.style.display =
+            "none";
 
 
-if (!navigator.geolocation) {
-
-status.className = "error";
-
-status.textContent =
-"La géolocalisation n'est pas disponible.";
-
-gpsButton.disabled = false;
-
-return;
-
-}
+        status.className =
+            "status-normal";
 
 
-navigator.geolocation.getCurrentPosition(
-
-function(position) {
-
-
-const lat =
-position.coords.latitude;
-
-const lon =
-position.coords.longitude;
-
-const precision =
-position.coords.accuracy;
+        status.textContent =
+            "Recherche de votre position…";
 
 
-latitude.textContent =
-lat.toFixed(6);
-
-longitude.textContent =
-lon.toFixed(6);
+        gpsButton.disabled =
+            true;
 
 
-accuracy.textContent =
-"Précision estimée : " +
-Math.round(precision) +
-" mètres";
+        // ==================================================
+        // VERIFICATION GEOLOCALISATION
+        // ==================================================
+
+        if (!navigator.geolocation) {
 
 
-positionGPS =
-lat.toFixed(6) +
-", " +
-lon.toFixed(6);
+            status.className =
+                "status-error";
 
 
-mapsButton.href =
-"https://www.google.com/maps/search/?api=1&query=" +
-encodeURIComponent(lat + "," + lon);
+            status.textContent =
+                "La géolocalisation n'est pas disponible sur cet appareil.";
 
 
-result.style.display =
-"block";
+            gpsButton.disabled =
+                false;
 
 
-status.className =
-"ok";
+            return;
 
-status.textContent =
-"Position trouvée ✓";
+        }
 
 
-gpsButton.disabled =
-false;
+        // ==================================================
+        // RECUPERATION GPS
+        // ==================================================
 
-},
-
-
-function(error) {
+        navigator.geolocation.getCurrentPosition(
 
 
-let message =
-"Impossible de récupérer votre position.";
+            function(position) {
 
 
-if (error.code === 1) {
+                // ==========================================
+                // COORDONNEES
+                // ==========================================
 
-message =
-"Accès à la localisation refusé. " +
-"Autorisez la localisation.";
-
-}
-
-
-if (error.code === 2) {
-
-message =
-"Position indisponible. " +
-"Activez la localisation du téléphone.";
-
-}
+                const lat =
+                    position.coords.latitude;
 
 
-if (error.code === 3) {
-
-message =
-"Le GPS met trop de temps à répondre. " +
-"Veuillez réessayer.";
-
-}
+                const lon =
+                    position.coords.longitude;
 
 
-status.className =
-"error";
-
-status.textContent =
-message;
-
-gpsButton.disabled =
-false;
-
-},
+                const precision =
+                    position.coords.accuracy;
 
 
-{
+                // ==========================================
+                // AFFICHAGE LATITUDE
+                // ==========================================
 
-enableHighAccuracy: true,
+                latitude.textContent =
+                    lat.toFixed(6);
 
-timeout: 20000,
 
-maximumAge: 0
+                // ==========================================
+                // AFFICHAGE LONGITUDE
+                // ==========================================
 
-}
+                longitude.textContent =
+                    lon.toFixed(6);
+
+
+                // ==========================================
+                // PRECISION
+                // ==========================================
+
+                accuracy.textContent =
+
+                    "Précision estimée : " +
+
+                    Math.round(precision) +
+
+                    " mètres";
+
+
+                // ==========================================
+                // TEXTE A COPIER
+                // ==========================================
+
+                positionGPS =
+
+                    lat.toFixed(6) +
+
+                    ", " +
+
+                    lon.toFixed(6);
+
+
+                positionText.textContent =
+                    positionGPS;
+
+
+                // ==========================================
+                // GOOGLE MAPS
+                // ==========================================
+
+                mapsButton.href =
+
+                    "https://www.google.com/maps/search/?api=1&query=" +
+
+                    encodeURIComponent(
+
+                        lat + "," + lon
+
+                    );
+
+
+                // ==========================================
+                // FORMULAIRE
+                // ==========================================
+
+                formButton.href =
+                    FORM_URL;
+
+
+                // ==========================================
+                // AFFICHER RESULTAT
+                // ==========================================
+
+                result.style.display =
+                    "block";
+
+
+                status.className =
+                    "status-ok";
+
+
+                status.textContent =
+                    "Position trouvée ✓";
+
+
+                gpsButton.disabled =
+                    false;
+
+
+                // ==========================================
+                // STOCKAGE TEMPORAIRE
+                // ==========================================
+
+                try {
+
+                    sessionStorage.setItem(
+                        "latitude",
+                        lat.toFixed(6)
+                    );
+
+                    sessionStorage.setItem(
+                        "longitude",
+                        lon.toFixed(6)
+                    );
+
+                    sessionStorage.setItem(
+                        "positionGPS",
+                        positionGPS
+                    );
+
+                }
+
+                catch (e) {
+
+                    // Pas bloquant
+
+                }
+
+
+            },
+
+
+            // ==================================================
+            // ERREUR GPS
+            // ==================================================
+
+            function(error) {
+
+
+                let message =
+
+                    "Impossible de récupérer votre position.";
+
+
+                if (error.code === 1) {
+
+                    message =
+
+                        "Accès à la localisation refusé. " +
+
+                        "Autorisez la localisation dans votre navigateur.";
+
+                }
+
+
+                if (error.code === 2) {
+
+                    message =
+
+                        "Position indisponible. " +
+
+                        "Vérifiez que la localisation du téléphone est activée.";
+
+                }
+
+
+                if (error.code === 3) {
+
+                    message =
+
+                        "La recherche GPS a dépassé le délai. " +
+
+                        "Veuillez réessayer.";
+
+                }
+
+
+                status.className =
+                    "status-error";
+
+
+                status.textContent =
+                    message;
+
+
+                gpsButton.disabled =
+                    false;
+
+            },
+
+
+            // ==================================================
+            // OPTIONS GPS
+            // ==================================================
+
+            {
+
+                enableHighAccuracy:
+                    true,
+
+                timeout:
+                    30000,
+
+                maximumAge:
+                    0
+
+            }
+
+        );
+
+    }
 
 );
 
-});
 
+// ==========================================================
+// COPIER LA POSITION
+// ==========================================================
 
 copyButton.addEventListener(
-"click",
-async function() {
+
+    "click",
+
+    async function() {
 
 
-if (!positionGPS) {
-return;
-}
+        if (!positionGPS) {
+
+            return;
+
+        }
 
 
-try {
+        try {
 
-await navigator.clipboard.writeText(
-positionGPS
+
+            await navigator.clipboard.writeText(
+
+                positionGPS
+
+            );
+
+
+            copyButton.textContent =
+                "✓ POSITION COPIÉE";
+
+
+            setTimeout(
+
+                function() {
+
+                    copyButton.textContent =
+                        "📋 COPIER LA POSITION";
+
+                },
+
+                2000
+
+            );
+
+
+        }
+
+        catch (error) {
+
+
+            window.prompt(
+
+                "Copiez votre position :",
+
+                positionGPS
+
+            );
+
+        }
+
+    }
+
 );
-
-copyButton.textContent =
-"✓ POSITION COPIÉE";
-
-
-setTimeout(
-function() {
-
-copyButton.textContent =
-"📋 COPIER LA POSITION";
-
-},
-2000
-);
-
-
-}
-
-catch {
-
-window.prompt(
-"Copiez votre position :",
-positionGPS
-);
-
-}
-
-});
 
 
 </script>
+
 
 </body>
 
