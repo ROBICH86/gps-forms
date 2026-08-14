@@ -17,17 +17,13 @@
 
 <style>
 
-* {
-    box-sizing: border-box;
-}
-
 html,
 body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 #map {
@@ -36,73 +32,42 @@ body {
 }
 
 #titre {
-
     position: absolute;
-
     top: 15px;
     left: 15px;
-
     z-index: 1000;
-
     background: white;
-
     padding: 12px 18px;
-
     border-radius: 12px;
-
-    box-shadow:
-        0 3px 15px rgba(0,0,0,0.20);
-
+    box-shadow: 0 3px 15px rgba(0,0,0,0.20);
     font-weight: bold;
-
     font-size: 18px;
 }
 
 .popup {
-
     min-width: 280px;
-
-    max-width: 360px;
-
-    font-family: Arial, Helvetica, sans-serif;
+    max-width: 380px;
 }
 
 .popup-title {
-
     font-size: 20px;
-
     font-weight: bold;
-
     margin-bottom: 12px;
-
-    color: #1769e0;
 }
 
-.info-row {
-
-    margin-bottom: 7px;
-
-    line-height: 1.35;
+.info {
+    margin-bottom: 6px;
 }
 
-.info-label {
-
+.label {
     font-weight: bold;
-
-    color: #555;
 }
 
 .gps {
-
-    margin-top: 12px;
-
-    padding-top: 10px;
-
+    margin-top: 10px;
+    padding-top: 8px;
     border-top: 1px solid #ddd;
-
     font-size: 12px;
-
-    color: #666;
 }
 
 </style>
@@ -117,382 +82,273 @@ body {
 
 <div id="map"></div>
 
-<script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
-// ============================================================
-// RECUPERATION DES DONNEES EXCEL
-// ============================================================
+// ======================================================
+// RECUPERATION DES DONNEES
+// ======================================================
 
-const parametres =
+const params =
     new URLSearchParams(
         window.location.search
     );
 
-let donnees = [];
+const donnees =
+    params.get("data");
 
-try {
 
-    const data =
-        parametres.get("data");
-
-    if (data) {
-
-        donnees =
-            JSON.parse(
-                decodeURIComponent(data)
-            );
-
-    }
-
-}
-catch (erreur) {
-
-    console.error(
-        "Erreur données :",
-        erreur
-    );
-
-}
-
-// ============================================================
-// VERIFICATION
-// ============================================================
-
-if (
-    !Array.isArray(donnees) ||
-    donnees.length === 0
-) {
-
-    document.getElementById("titre")
-        .textContent =
-        "⚠️ Aucun chantier sélectionné";
-
-}
-else {
-
-    document.getElementById("titre")
-        .textContent =
-        "🗺️ " +
-        donnees.length +
-        " chantier(s) sélectionné(s)";
-
-}
-
-// ============================================================
-// CREATION DE LA CARTE
-// ============================================================
+// ======================================================
+// CARTE
+// ======================================================
 
 const map =
     L.map("map");
 
-
-// ============================================================
-// FOND OPENSTREETMAP
-// ============================================================
-
 L.tileLayer(
-
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-
     {
-
         maxZoom: 19,
-
         attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-
+            '&copy; OpenStreetMap contributors'
     }
-
 ).addTo(map);
 
 
-// ============================================================
+// ======================================================
 // GROUPE DE MARQUEURS
-// ============================================================
+// ======================================================
 
 const groupe =
     L.featureGroup();
 
 
-// ============================================================
-// CREATION DES MARQUEURS
-// ============================================================
+// ======================================================
+// SI AUCUNE DONNEE
+// ======================================================
 
-donnees.forEach(
+if (!donnees) {
 
-    function (chantier) {
+    document.getElementById("titre")
+        .textContent =
+        "⚠️ Aucun chantier transmis";
 
-        const latitude =
-            Number(
-                chantier.latitude
-            );
-
-        const longitude =
-            Number(
-                chantier.longitude
-            );
-
-        if (
-            isNaN(latitude) ||
-            isNaN(longitude)
-        ) {
-
-            return;
-
-        }
-
-        // ----------------------------------------------------
-        // NUMERO DE CHANTIER
-        // ----------------------------------------------------
-
-        let numero =
-            chantier["Numéro de chantier"] ||
-            "Chantier";
-
-        // ----------------------------------------------------
-        // CONTENU DE LA FENETRE
-        // ----------------------------------------------------
-
-        let contenu =
-
-            '<div class="popup">' +
-
-            '<div class="popup-title">' +
-
-            '📍 Chantier ' +
-
-            echapper(
-                numero
-            ) +
-
-            '</div>';
-
-
-        // ----------------------------------------------------
-        // HEURE DE DEBUT
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Heure de début",
-                chantier["Heure de début"]
-            );
-
-
-        // ----------------------------------------------------
-        // NUMERO CHANTIER
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Numéro de chantier",
-                chantier["Numéro de chantier"]
-            );
-
-
-        // ----------------------------------------------------
-        // OPERATION
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Opération",
-                chantier["Opération"]
-            );
-
-
-        // ----------------------------------------------------
-        // PROPRIETAIRE
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Nom du propriétaire",
-                chantier["Nom du propriétaire"]
-            );
-
-
-        // ----------------------------------------------------
-        // COMMUNE
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Commune",
-                chantier["Comunne"]
-            );
-
-
-        // ----------------------------------------------------
-        // DEPOT
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Dépôt",
-                chantier["Dépôt"]
-            );
-
-
-        // ----------------------------------------------------
-        // LONGUEUR
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Longueur",
-                chantier["Longueur"]
-            );
-
-
-        // ----------------------------------------------------
-        // NUMERO DE PILE
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Numéro de pile",
-                chantier["Numéro de pile"]
-            );
-
-
-        // ----------------------------------------------------
-        // CATEGORIE
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Catégorie",
-                chantier["Catégorie"]
-            );
-
-
-        // ----------------------------------------------------
-        // PRODUITS
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Produits",
-                chantier["Produits"]
-            );
-
-
-        // ----------------------------------------------------
-        // VOLUME
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Volume",
-                chantier["Volume"]
-            );
-
-
-        // ----------------------------------------------------
-        // UNITE
-        // ----------------------------------------------------
-
-        contenu +=
-            information(
-                "Unité",
-                chantier["Unité"]
-            );
-
-
-        // ----------------------------------------------------
-        // GPS
-        // ----------------------------------------------------
-
-        contenu +=
-
-            '<div class="gps">' +
-
-            'Latitude : ' +
-            latitude.toFixed(6) +
-
-            '<br>' +
-
-            'Longitude : ' +
-            longitude.toFixed(6) +
-
-            '</div>';
-
-
-        contenu +=
-            '</div>';
-
-
-        // ----------------------------------------------------
-        // MARQUEUR
-        // ----------------------------------------------------
-
-        const marqueur =
-            L.marker([
-                latitude,
-                longitude
-            ]);
-
-
-        marqueur
-            .bindPopup(
-                contenu
-            );
-
-
-        marqueur.addTo(
-            groupe
-        );
-
-    }
-
-);
-
-
-// ============================================================
-// AJOUTER LES MARQUEURS
-// ============================================================
-
-groupe.addTo(map);
-
-
-// ============================================================
-// CENTRER LA CARTE
-// ============================================================
-
-if (
-    donnees.length > 0 &&
-    groupe.getLayers().length > 0
-) {
-
-    map.fitBounds(
-        groupe.getBounds(),
-        {
-            padding: [40, 40]
-        }
-    );
-
-}
-else {
-
-    // Position par défaut France
     map.setView(
         [46.6, 2.4],
         6
     );
 
 }
+else {
+
+    try {
+
+        // Décodage
+        const texte =
+            decodeURIComponent(donnees);
+
+        const chantiers =
+            JSON.parse(texte);
 
 
-// ============================================================
-// FONCTION INFORMATION
-// ============================================================
+        document.getElementById("titre")
+            .textContent =
+            "🗺️ " +
+            chantiers.length +
+            " chantier(s)";
 
-function information(
+
+        // ==================================================
+        // MARQUEURS
+        // ==================================================
+
+        chantiers.forEach(function(c) {
+
+            const latitude =
+                Number(c.lat);
+
+            const longitude =
+                Number(c.lon);
+
+            if (
+                isNaN(latitude) ||
+                isNaN(longitude)
+            ) {
+                return;
+            }
+
+
+            // ==============================================
+            // FENETRE DU MARQUEUR
+            // ==============================================
+
+            let html =
+
+                '<div class="popup">' +
+
+                '<div class="popup-title">' +
+                '📍 Chantier ' +
+                echapper(c.chantier) +
+                '</div>';
+
+
+            html += info(
+                "Heure de début",
+                c.heure
+            );
+
+            html += info(
+                "Numéro de chantier",
+                c.chantier
+            );
+
+            html += info(
+                "Opération",
+                c.operation
+            );
+
+            html += info(
+                "Nom du propriétaire",
+                c.proprietaire
+            );
+
+            html += info(
+                "Commune",
+                c.commune
+            );
+
+            html += info(
+                "Dépôt",
+                c.depot
+            );
+
+            html += info(
+                "Longueur",
+                c.longueur
+            );
+
+            html += info(
+                "Numéro de pile",
+                c.pile
+            );
+
+            html += info(
+                "Catégorie",
+                c.categorie
+            );
+
+            html += info(
+                "Produits",
+                c.produits
+            );
+
+            html += info(
+                "Volume",
+                c.volume
+            );
+
+            html += info(
+                "Unité",
+                c.unite
+            );
+
+
+            html +=
+
+                '<div class="gps">' +
+
+                'Latitude : ' +
+                latitude.toFixed(6) +
+
+                '<br>' +
+
+                'Longitude : ' +
+                longitude.toFixed(6) +
+
+                '</div>' +
+
+                '</div>';
+
+
+            // ==============================================
+            // MARQUEUR
+            // ==============================================
+
+            const marqueur =
+                L.marker([
+                    latitude,
+                    longitude
+                ]);
+
+
+            marqueur
+                .bindPopup(html);
+
+
+            marqueur.addTo(
+                groupe
+            );
+
+        });
+
+
+        // ==================================================
+        // AJOUT DES MARQUEURS
+        // ==================================================
+
+        groupe.addTo(map);
+
+
+        // ==================================================
+        // CENTRAGE AUTOMATIQUE
+        // ==================================================
+
+        if (
+            groupe.getLayers().length > 0
+        ) {
+
+            map.fitBounds(
+                groupe.getBounds(),
+                {
+                    padding: [50, 50]
+                }
+            );
+
+        }
+        else {
+
+            map.setView(
+                [46.6, 2.4],
+                6
+            );
+
+        }
+
+    }
+    catch (erreur) {
+
+        console.error(erreur);
+
+        document.getElementById("titre")
+            .textContent =
+            "❌ Erreur de lecture des chantiers";
+
+        map.setView(
+            [46.6, 2.4],
+            6
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// AFFICHER UNE INFORMATION
+// ======================================================
+
+function info(
     nom,
     valeur
 ) {
@@ -502,19 +358,15 @@ function information(
         valeur === null ||
         valeur === ""
     ) {
-
         return "";
-
     }
 
     return (
 
-        '<div class="info-row">' +
+        '<div class="info">' +
 
-        '<span class="info-label">' +
-
+        '<span class="label">' +
         echapper(nom) +
-
         ' :</span> ' +
 
         echapper(
@@ -528,9 +380,9 @@ function information(
 }
 
 
-// ============================================================
-// PROTECTION HTML
-// ============================================================
+// ======================================================
+// SECURITE HTML
+// ======================================================
 
 function echapper(
     texte
@@ -538,31 +390,15 @@ function echapper(
 
     return String(texte)
 
-        .replace(
-            /&/g,
-            "&amp;"
-        )
+        .replace(/&/g, "&amp;")
 
-        .replace(
-            /</g,
-            "&lt;"
-        )
+        .replace(/</g, "&lt;")
 
-        .replace(
-            />/g,
-            "&gt;"
-        )
+        .replace(/>/g, "&gt;")
 
-        .replace(
-            /"/g,
-            "&quot;"
-        )
+        .replace(/"/g, "&quot;")
 
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
+        .replace(/'/g, "&#039;");
 }
 
 </script>
