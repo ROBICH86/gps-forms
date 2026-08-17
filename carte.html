@@ -44,6 +44,10 @@ body {
     font-size: 18px;
 }
 
+/* ======================================================
+   POPUP
+   ====================================================== */
+
 .popup {
     min-width: 280px;
     max-width: 380px;
@@ -70,6 +74,15 @@ body {
     font-size: 12px;
 }
 
+/* ======================================================
+   CONTROLE DES FONDS DE CARTE
+   ====================================================== */
+
+.leaflet-control-layers {
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.20);
+}
+
 </style>
 
 </head>
@@ -82,7 +95,11 @@ body {
 
 <div id="map"></div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
 
 <script>
 
@@ -100,18 +117,97 @@ const donnees =
 
 
 // ======================================================
-// CARTE
+// CREATION DE LA CARTE
 // ======================================================
 
 const map =
     L.map("map");
 
-L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+// ======================================================
+// FOND 1 : OPENSTREETMAP
+// ======================================================
+
+const fondOSM =
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            maxZoom: 19,
+
+            attribution:
+                '&copy; OpenStreetMap contributors'
+        }
+    );
+
+
+// ======================================================
+// FOND 2 : SATELLITE
+// ======================================================
+
+const fondSatellite =
+    L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+            maxZoom: 19,
+
+            attribution:
+                'Tiles &copy; Esri'
+        }
+    );
+
+
+// ======================================================
+// FOND 3 : TERRAIN / RELIEF
+// ======================================================
+
+const fondTerrain =
+    L.tileLayer(
+        "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+        {
+            maxZoom: 17,
+
+            attribution:
+                'Map data &copy; OpenStreetMap contributors, SRTM | Map style &copy; OpenTopoMap'
+        }
+    );
+
+
+// ======================================================
+// FOND PAR DEFAUT
+// ======================================================
+
+fondOSM.addTo(map);
+
+
+// ======================================================
+// SELECTION DES FONDS DE CARTE
+// ======================================================
+
+const fonds =
     {
-        maxZoom: 19,
-        attribution:
-            '&copy; OpenStreetMap contributors'
+
+        "🗺️ Plan - OpenStreetMap":
+            fondOSM,
+
+        "🛰️ Satellite":
+            fondSatellite,
+
+        "🏔️ Terrain / Relief":
+            fondTerrain
+
+    };
+
+
+// ======================================================
+// AJOUT DU BOUTON DES FONDS
+// ======================================================
+
+L.control.layers(
+    fonds,
+    null,
+    {
+        collapsed: false,
+        position: "topright"
     }
 ).addTo(map);
 
@@ -140,17 +236,25 @@ if (!donnees) {
     );
 
 }
+
 else {
 
     try {
 
-        // Décodage
+        // ==================================================
+        // DECODAGE DES DONNEES
+        // ==================================================
+
         const texte =
             decodeURIComponent(donnees);
 
         const chantiers =
             JSON.parse(texte);
 
+
+        // ==================================================
+        // TITRE
+        // ==================================================
 
         document.getElementById("titre")
             .textContent =
@@ -160,10 +264,15 @@ else {
 
 
         // ==================================================
-        // MARQUEURS
+        // CREATION DES MARQUEURS
         // ==================================================
 
         chantiers.forEach(function(c) {
+
+
+            // ==============================================
+            // COORDONNEES GPS
+            // ==============================================
 
             const latitude =
                 Number(c.lat);
@@ -171,11 +280,18 @@ else {
             const longitude =
                 Number(c.lon);
 
+
+            // ==============================================
+            // VERIFICATION GPS
+            // ==============================================
+
             if (
                 isNaN(latitude) ||
                 isNaN(longitude)
             ) {
+
                 return;
+
             }
 
 
@@ -188,65 +304,127 @@ else {
                 '<div class="popup">' +
 
                 '<div class="popup-title">' +
+
                 '📍 Chantier ' +
+
                 echapper(c.chantier) +
+
                 '</div>';
 
+
+            // ==============================================
+            // 1 - HEURE DE DEBUT
+            // ==============================================
 
             html += info(
                 "Heure de début",
                 c.heure
             );
 
+
+            // ==============================================
+            // 2 - NUMERO DE CHANTIER
+            // ==============================================
+
             html += info(
                 "Numéro de chantier",
                 c.chantier
             );
+
+
+            // ==============================================
+            // 3 - OPERATION
+            // ==============================================
 
             html += info(
                 "Opération",
                 c.operation
             );
 
+
+            // ==============================================
+            // 4 - NOM DU PROPRIETAIRE
+            // ==============================================
+
             html += info(
                 "Nom du propriétaire",
                 c.proprietaire
             );
+
+
+            // ==============================================
+            // 5 - COMMUNE
+            // ==============================================
 
             html += info(
                 "Commune",
                 c.commune
             );
 
+
+            // ==============================================
+            // 6 - DEPOT
+            // ==============================================
+
             html += info(
                 "Dépôt",
                 c.depot
             );
+
+
+            // ==============================================
+            // 7 - LONGUEUR
+            // ==============================================
 
             html += info(
                 "Longueur",
                 c.longueur
             );
 
+
+            // ==============================================
+            // 8 - NUMERO DE PILE
+            // ==============================================
+
             html += info(
                 "Numéro de pile",
                 c.pile
             );
+
+
+            // ==============================================
+            // 9 - CATEGORIE
+            // ==============================================
 
             html += info(
                 "Catégorie",
                 c.categorie
             );
 
+
+            // ==============================================
+            // 10 - PRODUITS
+            // ==============================================
+
             html += info(
                 "Produits",
                 c.produits
             );
 
+
+            // ==============================================
+            // 11 - VOLUME
+            // ==============================================
+
             html += info(
                 "Volume",
                 c.volume
             );
+
+
+            // ==============================================
+            // 12 - UNITE
+            // ==============================================
 
             html += info(
                 "Unité",
@@ -254,16 +432,22 @@ else {
             );
 
 
+            // ==============================================
+            // COORDONNEES GPS
+            // ==============================================
+
             html +=
 
                 '<div class="gps">' +
 
                 'Latitude : ' +
+
                 latitude.toFixed(6) +
 
                 '<br>' +
 
                 'Longitude : ' +
+
                 longitude.toFixed(6) +
 
                 '</div>' +
@@ -272,19 +456,29 @@ else {
 
 
             // ==============================================
-            // MARQUEUR
+            // CREATION DU MARQUEUR
             // ==============================================
 
             const marqueur =
-                L.marker([
-                    latitude,
-                    longitude
-                ]);
+                L.marker(
+                    [
+                        latitude,
+                        longitude
+                    ]
+                );
 
+
+            // ==============================================
+            // FENETRE DU MARQUEUR
+            // ==============================================
 
             marqueur
                 .bindPopup(html);
 
+
+            // ==============================================
+            // AJOUT AU GROUPE
+            // ==============================================
 
             marqueur.addTo(
                 groupe
@@ -294,7 +488,7 @@ else {
 
 
         // ==================================================
-        // AJOUT DES MARQUEURS
+        // AJOUT DES MARQUEURS A LA CARTE
         // ==================================================
 
         groupe.addTo(map);
@@ -316,6 +510,7 @@ else {
             );
 
         }
+
         else {
 
             map.setView(
@@ -326,13 +521,16 @@ else {
         }
 
     }
+
     catch (erreur) {
 
         console.error(erreur);
 
+
         document.getElementById("titre")
             .textContent =
             "❌ Erreur de lecture des chantiers";
+
 
         map.setView(
             [46.6, 2.4],
@@ -345,7 +543,7 @@ else {
 
 
 // ======================================================
-// AFFICHER UNE INFORMATION
+// FONCTION AFFICHER UNE INFORMATION
 // ======================================================
 
 function info(
@@ -358,15 +556,20 @@ function info(
         valeur === null ||
         valeur === ""
     ) {
+
         return "";
+
     }
+
 
     return (
 
         '<div class="info">' +
 
         '<span class="label">' +
+
         echapper(nom) +
+
         ' :</span> ' +
 
         echapper(
@@ -390,15 +593,31 @@ function echapper(
 
     return String(texte)
 
-        .replace(/&/g, "&amp;")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
 
-        .replace(/</g, "&lt;")
+        .replace(
+            /</g,
+            "&lt;"
+        )
 
-        .replace(/>/g, "&gt;")
+        .replace(
+            />/g,
+            "&gt;"
+        )
 
-        .replace(/"/g, "&quot;")
+        .replace(
+            /"/g,
+            "&quot;"
+        )
 
-        .replace(/'/g, "&#039;");
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
 }
 
 </script>
