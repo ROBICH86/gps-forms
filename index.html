@@ -278,6 +278,8 @@ button:active {
     margin-top: 10px;
 
     cursor: pointer;
+
+    user-select: none;
 }
 
 
@@ -557,18 +559,14 @@ gpsButton.addEventListener(
 
         if (!navigator.geolocation) {
 
-
             status.className =
                 "status-error";
-
 
             status.textContent =
                 "La géolocalisation n'est pas disponible sur cet appareil.";
 
-
             gpsButton.disabled =
                 false;
-
 
             return;
 
@@ -581,7 +579,6 @@ gpsButton.addEventListener(
 
         navigator.geolocation.getCurrentPosition(
 
-
             function(position) {
 
 
@@ -592,17 +589,15 @@ gpsButton.addEventListener(
                 const lat =
                     position.coords.latitude;
 
-
                 const lon =
                     position.coords.longitude;
-
 
                 const precision =
                     position.coords.accuracy;
 
 
                 // ==========================================
-                // AFFICHAGE LATITUDE
+                // LATITUDE
                 // ==========================================
 
                 latitude.textContent =
@@ -610,7 +605,7 @@ gpsButton.addEventListener(
 
 
                 // ==========================================
-                // AFFICHAGE LONGITUDE
+                // LONGITUDE
                 // ==========================================
 
                 longitude.textContent =
@@ -622,24 +617,18 @@ gpsButton.addEventListener(
                 // ==========================================
 
                 accuracy.textContent =
-
                     "Précision estimée : " +
-
                     Math.round(precision) +
-
                     " mètres";
 
 
                 // ==========================================
-                // TEXTE A COPIER
+                // POSITION A COPIER
                 // ==========================================
 
                 positionGPS =
-
                     lat.toFixed(6) +
-
                     ", " +
-
                     lon.toFixed(6);
 
 
@@ -652,29 +641,14 @@ gpsButton.addEventListener(
                 // ==========================================
 
                 mapsButton.href =
-
                     "https://www.google.com/maps/search/?api=1&query=" +
-
                     encodeURIComponent(
-
                         lat + "," + lon
-
                     );
 
 
                 // ==========================================
-                // FORMULAIRE
-                // ==========================================
-
-                // Le bouton n'utilise volontairement
-                // plus directement FORM_URL.
-                //
-                // Il utilise le bouton spécial ci-dessous
-                // pour revenir à la page Forms déjà ouverte.
-
-
-                // ==========================================
-                // AFFICHER RESULTAT
+                // AFFICHAGE
                 // ==========================================
 
                 result.style.display =
@@ -694,7 +668,7 @@ gpsButton.addEventListener(
 
 
                 // ==========================================
-                // STOCKAGE TEMPORAIRE
+                // MEMORISATION
                 // ==========================================
 
                 try {
@@ -734,16 +708,13 @@ gpsButton.addEventListener(
 
 
                 let message =
-
                     "Impossible de récupérer votre position.";
 
 
                 if (error.code === 1) {
 
                     message =
-
                         "Accès à la localisation refusé. " +
-
                         "Autorisez la localisation dans votre navigateur.";
 
                 }
@@ -752,9 +723,7 @@ gpsButton.addEventListener(
                 if (error.code === 2) {
 
                     message =
-
                         "Position indisponible. " +
-
                         "Vérifiez que la localisation du téléphone est activée.";
 
                 }
@@ -763,9 +732,7 @@ gpsButton.addEventListener(
                 if (error.code === 3) {
 
                     message =
-
                         "La recherche GPS a dépassé le délai. " +
-
                         "Veuillez réessayer.";
 
                 }
@@ -831,9 +798,7 @@ copyButton.addEventListener(
 
 
             await navigator.clipboard.writeText(
-
                 positionGPS
-
             );
 
 
@@ -861,11 +826,8 @@ copyButton.addEventListener(
 
 
             window.prompt(
-
                 "Copiez votre position :",
-
                 positionGPS
-
             );
 
         }
@@ -888,20 +850,53 @@ formButton.addEventListener(
         event.preventDefault();
 
 
-        // ==================================================
-        // CAS 1 :
-        // La page GPS a été ouverte depuis Microsoft Forms
-        // dans un nouvel onglet.
+        // --------------------------------------------------
+        // CAS 1
+        // La page GPS a été ouverte dans un nouvel onglet
+        // depuis le formulaire.
         //
-        // On revient simplement sur l'onglet Forms
-        // déjà ouvert, sans recharger le formulaire.
-        // ==================================================
+        // window.opener correspond alors à la fenêtre
+        // Forms qui était déjà ouverte.
+        // --------------------------------------------------
 
-        if (window.opener && !window.opener.closed) {
+        if (
+            window.opener &&
+            !window.opener.closed
+        ) {
 
             try {
 
+                // On remet Microsoft Forms au premier plan
+
                 window.opener.focus();
+
+
+                // Petit délai pour laisser au navigateur
+                // le temps de donner le focus à Forms
+
+                setTimeout(
+
+                    function() {
+
+                        try {
+
+                            window.close();
+
+                        }
+
+                        catch (e) {
+
+                            // Le navigateur peut refuser
+                            // la fermeture automatique.
+
+                        }
+
+                    },
+
+                    150
+
+                );
+
 
                 return;
 
@@ -909,23 +904,24 @@ formButton.addEventListener(
 
             catch (e) {
 
-                // On continue vers le cas suivant
+                // On passe au cas suivant
 
             }
 
         }
 
 
-        // ==================================================
-        // CAS 2 :
-        // La page GPS se trouve dans le même onglet.
+        // --------------------------------------------------
+        // CAS 2
+        // La page GPS est dans le même onglet.
         //
-        // On revient à la page précédente.
-        // Cela permet de retrouver la page Forms
-        // exactement là où elle était.
-        // ==================================================
+        // On utilise l'historique du navigateur afin de
+        // revenir exactement à la page précédente.
+        // --------------------------------------------------
 
-        if (window.history.length > 1) {
+        if (
+            window.history.length > 1
+        ) {
 
             window.history.back();
 
@@ -934,15 +930,79 @@ formButton.addEventListener(
         }
 
 
-        // ==================================================
-        // CAS 3 :
-        // Aucun historique disponible.
+        // --------------------------------------------------
+        // CAS 3
+        // Aucun onglet parent et aucun historique.
         //
-        // Dernier recours : ouvrir Forms.
-        // ==================================================
+        // Dernier recours uniquement.
+        // --------------------------------------------------
 
         window.location.href =
             FORM_URL;
+
+    }
+
+);
+
+
+// ==========================================================
+// RECUPERATION D'UNE POSITION DEJA MEMORISEE
+// ==========================================================
+
+window.addEventListener(
+
+    "load",
+
+    function() {
+
+        try {
+
+            const savedLatitude =
+                sessionStorage.getItem("latitude");
+
+            const savedLongitude =
+                sessionStorage.getItem("longitude");
+
+            const savedPosition =
+                sessionStorage.getItem("positionGPS");
+
+
+            if (
+                savedLatitude &&
+                savedLongitude &&
+                savedPosition
+            ) {
+
+                latitude.textContent =
+                    savedLatitude;
+
+                longitude.textContent =
+                    savedLongitude;
+
+                positionGPS =
+                    savedPosition;
+
+                positionText.textContent =
+                    savedPosition;
+
+
+                mapsButton.href =
+                    "https://www.google.com/maps/search/?api=1&query=" +
+                    encodeURIComponent(
+                        savedLatitude +
+                        "," +
+                        savedLongitude
+                    );
+
+            }
+
+        }
+
+        catch (e) {
+
+            // Pas bloquant
+
+        }
 
     }
 
