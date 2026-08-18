@@ -276,6 +276,8 @@ button:active {
     font-weight: bold;
 
     margin-top: 10px;
+
+    cursor: pointer;
 }
 
 
@@ -441,11 +443,9 @@ button:active {
 
         <a
             id="formButton"
-            class="form-button"
-            target="_blank"
-            rel="noopener">
+            class="form-button">
 
-            📝 OUVRIR LE FORMULAIRE
+            ↩️ REVENIR AU FORMULAIRE
 
         </a>
 
@@ -666,8 +666,11 @@ gpsButton.addEventListener(
                 // FORMULAIRE
                 // ==========================================
 
-                formButton.href =
-                    FORM_URL;
+                // Le bouton n'utilise volontairement
+                // plus directement FORM_URL.
+                //
+                // Il utilise le bouton spécial ci-dessous
+                // pour revenir à la page Forms déjà ouverte.
 
 
                 // ==========================================
@@ -866,6 +869,80 @@ copyButton.addEventListener(
             );
 
         }
+
+    }
+
+);
+
+
+// ==========================================================
+// REVENIR AU FORMULAIRE
+// ==========================================================
+
+formButton.addEventListener(
+
+    "click",
+
+    function(event) {
+
+        event.preventDefault();
+
+
+        // ==================================================
+        // CAS 1 :
+        // La page GPS a été ouverte depuis Microsoft Forms
+        // dans un nouvel onglet.
+        //
+        // On revient simplement sur l'onglet Forms
+        // déjà ouvert, sans recharger le formulaire.
+        // ==================================================
+
+        if (window.opener && !window.opener.closed) {
+
+            try {
+
+                window.opener.focus();
+
+                return;
+
+            }
+
+            catch (e) {
+
+                // On continue vers le cas suivant
+
+            }
+
+        }
+
+
+        // ==================================================
+        // CAS 2 :
+        // La page GPS se trouve dans le même onglet.
+        //
+        // On revient à la page précédente.
+        // Cela permet de retrouver la page Forms
+        // exactement là où elle était.
+        // ==================================================
+
+        if (window.history.length > 1) {
+
+            window.history.back();
+
+            return;
+
+        }
+
+
+        // ==================================================
+        // CAS 3 :
+        // Aucun historique disponible.
+        //
+        // Dernier recours : ouvrir Forms.
+        // ==================================================
+
+        window.location.href =
+            FORM_URL;
 
     }
 
